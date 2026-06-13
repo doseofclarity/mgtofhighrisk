@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MCN: Management of High‑Risk Conditions in Pregnancy – Adele Pillitteri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        .transition-all { transition: all 0.3s ease; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #b45309; border-radius: 8px; }
+        .recall-mode .reveal-text {
+            background-color: #cbd5e1;
+            color: transparent;
+            border-radius: 0.375rem;
+            padding: 0 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            box-shadow: inset 0 0 0 1px #94a3b8;
+        }
+        .recall-mode .reveal-text:hover,
+        .recall-mode .reveal-text.revealed {
+            background-color: #fde047;
+            color: #1e293b;
+            box-shadow: none;
+        }
+        .content-section { animation: fade 0.3s ease; }
+        @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .locked-section { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+        .quiz-feedback-correct { background-color: #dcfce7; border-left: 4px solid #22c55e; }
+        .quiz-feedback-wrong { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+        .nav-btn.active { background-color: #ffedd5; color: #9a3412; border-right: 4px solid #ea580c; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { highrisk: { light: '#ffedd5', DEFAULT: '#ea580c', dark: '#9a3412' } } } }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 h-screen flex flex-col md:flex-row font-sans text-slate-800 overflow-hidden">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden bg-highrisk-dark text-white p-4 flex justify-between items-center shadow-md z-30 shrink-0">
+        <button onclick="toggleMobileMenu()" class="text-white focus:outline-none z-40"><i class="fa-solid fa-bars text-2xl"></i></button>
+        <h1 class="font-bold text-lg absolute left-1/2 transform -translate-x-1/2 pointer-events-none"><i class="fa-solid fa-heartbeat mr-2"></i> High‑Risk Pregnancy</h1>
+        <div class="w-8"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="hidden md:flex flex-col w-full md:w-80 bg-white shadow-2xl h-full absolute md:relative z-30 transition-all duration-300 shrink-0 border-r border-slate-200 overflow-y-auto">
+        <div class="p-6 bg-gradient-to-br from-highrisk-dark to-highrisk text-white hidden md:block shrink-0">
+            <h1 class="font-black text-2xl tracking-wide"><i class="fa-solid fa-heartbeat text-highrisk-light mr-2"></i> High‑Risk Pregnancy Management</h1>
+            <p class="text-sm text-slate-300 mt-1">Adele Pillitteri · Maternal‑Child Nursing</p>
+        </div>
+        <div class="flex-1 py-4">
+            <ul class="space-y-1 text-sm font-medium">
+                <li><button onclick="showSection('home')" id="btn-home" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors"><i class="fa-solid fa-house w-6 nav-icon"></i><i class="fa-solid fa-lock w-6 hidden text-slate-400"></i> Home / Start</button></li>
+                <li><button onclick="showSection('overview')" id="btn-overview" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-book-open w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> 1. Overview & Risk Stratification</button></li>
+                <li><button onclick="showSection('hypertension')" id="btn-hypertension" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-heart w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> 2. Hypertensive Disorders</button></li>
+                <li><button onclick="showSection('diabetes')" id="btn-diabetes" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-droplet w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> 3. Diabetes in Pregnancy</button></li>
+                <li><button onclick="showSection('preterm')" id="btn-preterm" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-clock w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> 4. Preterm Labor & PROM</button></li>
+                <li><button onclick="showSection('bleeding')" id="btn-bleeding" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-hand-holding-heart w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> 5. Bleeding Disorders & Multiple Gestation</button></li>
+                <li><button onclick="showSection('nursing')" id="btn-nursing" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-user-nurse w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> 6. Nursing Management & Surveillance</button></li>
+                <li><button onclick="showSection('mnemonics')" id="btn-mnemonics" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-brain w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> 7. Mnemonic Appendix</button></li>
+                <li><button onclick="showSection('final_quiz_sec')" id="btn-final_quiz_sec" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors border-t border-slate-200 mt-2 locked-section"><i class="fa-solid fa-graduation-cap w-6 text-amber-500 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Final 50‑Item Exam</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 h-full overflow-y-auto bg-slate-100 relative w-full">
+        <div class="fixed top-16 md:top-4 right-4 md:right-8 z-40 flex items-center bg-white/90 backdrop-blur px-4 py-3 rounded-full shadow-lg border border-slate-200 cursor-pointer hover:bg-slate-50" onclick="toggleRecallMode()">
+            <span class="mr-3 text-sm font-bold text-slate-700 hidden md:inline"><i class="fa-solid fa-brain text-highrisk mr-1"></i> Active Recall</span>
+            <span class="mr-3 text-sm font-bold text-slate-700 md:hidden"><i class="fa-solid fa-brain text-highrisk"></i></span>
+            <button id="recall-toggle" class="w-12 h-6 bg-slate-300 rounded-full relative transition-colors duration-300 focus:outline-none shadow-inner pointer-events-none">
+                <div id="recall-knob" class="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform duration-300 shadow"></div>
+            </button>
+        </div>
+
+        <div class="p-4 md:p-8 max-w-6xl mx-auto pb-32">
+            <!-- HOME -->
+            <section id="home" class="content-section flex flex-col items-center justify-center min-h-[80vh] text-center block">
+                <div class="bg-gradient-to-br from-slate-800 to-highrisk-dark text-white rounded-3xl shadow-2xl p-10 md:p-16 w-full relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-10 -mr-10 text-white opacity-5"><i class="fa-solid fa-triangle-exclamation text-[20rem]"></i></div>
+                    <div class="relative z-10">
+                        <div class="bg-white/10 backdrop-blur-sm inline-block p-4 rounded-full text-highrisk-light mb-6"><i class="fa-solid fa-hand-holding-heart text-5xl"></i></div>
+                        <h3 class="text-xl font-bold text-slate-300 mb-2 uppercase">Maternal‑Child Nursing · Adele Pillitteri</h3>
+                        <h1 class="text-4xl md:text-6xl font-black leading-tight drop-shadow-md">Management of High‑Risk<br>Conditions in Pregnancy</h1>
+                        <p class="text-lg max-w-2xl mx-auto mt-6 text-slate-200">Comprehensive evidence‑based management of hypertensive disorders, diabetes, preterm labor, bleeding conditions, and multiple gestation. Master risk stratification, pharmacologic and non‑pharmacologic interventions, and nursing surveillance.</p>
+                        <button onclick="unlockFirstSection()" class="mt-10 bg-slate-600 hover:bg-slate-500 text-white font-black py-4 px-12 rounded-full shadow-xl transition-transform hover:scale-105 text-lg flex items-center mx-auto">Begin Module <i class="fa-solid fa-arrow-right ml-3"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 1: Overview & Risk Stratification -->
+            <section id="overview" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-highrisk pb-3"><i class="fa-solid fa-book-open text-highrisk mr-4"></i> Overview & Risk Stratification</h2>
+                    <div class="bg-highrisk-light/20 border-l-4 border-highrisk p-4 rounded-r mb-6">A high‑risk pregnancy is one in which the mother, fetus, or newborn has a significantly increased chance of morbidity or mortality. Management involves early identification, specialized surveillance, and timely intervention.</div>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Risk factors:</strong> Maternal age (<18 or >35), chronic medical conditions (HTN, DM), obstetrical history (prior preterm, preeclampsia), multiple gestation, genetic disorders, substance use.</li>
+                        <li><strong>Levels of risk:</strong> Low, moderate, high. High‑risk pregnancies require multidisciplinary care (MFM, neonatology, anesthesia).</li>
+                        <li><strong>General management principles:</strong> Frequent prenatal visits, targeted screening, fetal surveillance (NST, BPP), management of underlying conditions, planning for delivery timing and mode.</li>
+                    </ul>
+                    <button onclick="openQuiz('overview')" class="mt-8 w-full bg-highrisk text-white font-black py-4 rounded-xl shadow-md hover:bg-highrisk-dark transition-colors text-lg"><i class="fa-solid fa-list-check mr-3"></i> Take 10-Item Quiz (Unlocks next section)</button>
+                </div>
+            </section>
+
+            <!-- Section 2: Hypertensive Disorders of Pregnancy -->
+            <section id="hypertension" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-highrisk pb-3"><i class="fa-solid fa-heart text-highrisk mr-4"></i> Hypertensive Disorders (PIH, Preeclampsia, Eclampsia)</h2>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Gestational hypertension:</strong> BP ≥140/90 after 20 weeks, no proteinuria. Monitor; treat if severe.</li>
+                        <li><strong>Preeclampsia:</strong> Hypertension + proteinuria or end‑organ dysfunction. Management: Antihypertensives (labetalol, nifedipine, hydralazine), magnesium sulfate for seizure prophylaxis, delivery at 37 weeks (or earlier if severe).</li>
+                        <li><strong>Eclampsia:</strong> Preeclampsia with grand‑mal seizures. Immediate magnesium sulfate, control BP, deliver after stabilization.</li>
+                        <li><strong>HELLP syndrome:</strong> Hemolysis, Elevated Liver enzymes, Low Platelets. Requires prompt delivery, corticosteroids for fetal lung maturity, platelet transfusion if <20,000.</li>
+                        <li><strong>Nursing interventions:</strong> BP monitoring, urine protein, reflex assessment, fetal surveillance, seizure precautions, IV magnesium monitoring (respiratory rate, DTR, urine output).</li>
+                    </ul>
+                    <button onclick="openQuiz('hypertension')" class="mt-8 w-full bg-highrisk text-white font-black py-4 rounded-xl shadow-md hover:bg-highrisk-dark transition-colors text-lg"><i class="fa-solid fa-list-check mr-3"></i> Take 10-Item Quiz (Unlocks next section)</button>
+                </div>
+            </section>
+
+            <!-- Section 3: Diabetes in Pregnancy -->
+            <section id="diabetes" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-highrisk pb-3"><i class="fa-solid fa-droplet text-highrisk mr-4"></i> Diabetes in Pregnancy (Pregestational & GDM)</h2>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Management goals:</strong> Fasting glucose <95 mg/dL, 1h postprandial <140 mg/dL, 2h <120 mg/dL.</li>
+                        <li><strong>Medical nutrition therapy:</strong> Consistent carbohydrate, small frequent meals, exercise.</li>
+                        <li><strong>Insulin therapy:</strong> Lispro/aspart (prandial), NPH (basal). Insulin does not cross placenta. Metformin and glyburide used but with caution.</li>
+                        <li><strong>Fetal surveillance:</strong> Ultrasound for growth, NST/BPP starting at 32–34 weeks, especially if on medication.</li>
+                        <li><strong>Delivery timing:</strong> Well‑controlled GDM at 39–40 weeks; poorly controlled or pregestational DM earlier (37–39 weeks). Intrapartum insulin drip to maintain glucose 70–110 mg/dL.</li>
+                        <li><strong>Postpartum:</strong> Glucose tolerance test at 6–12 weeks; breastfeeding encouraged (reduces future DM risk).</li>
+                    </ul>
+                    <button onclick="openQuiz('diabetes')" class="mt-8 w-full bg-highrisk text-white font-black py-4 rounded-xl shadow-md hover:bg-highrisk-dark transition-colors text-lg"><i class="fa-solid fa-list-check mr-3"></i> Take 10-Item Quiz (Unlocks next section)</button>
+                </div>
+            </section>
+
+            <!-- Section 4: Preterm Labor & Preterm Premature Rupture of Membranes (PROM) -->
+            <section id="preterm" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-highrisk pb-3"><i class="fa-solid fa-clock text-highrisk mr-4"></i> Preterm Labor & PPROM</h2>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Diagnosis:</strong> Regular uterine contractions with cervical change between 20–36⁶⁄⁷ weeks.</li>
+                        <li><strong>Tocolysis:</strong> Nifedipine, indomethacin, or terbutaline to delay delivery for 48 hours (for corticosteroids). Magnesium sulfate no longer recommended for tocolysis but for fetal neuroprotection.</li>
+                        <li><strong>Corticosteroids:</strong> Betamethasone or dexamethasone (24–34 weeks) to accelerate fetal lung maturity.</li>
+                        <li><strong>Preterm PROM (PPROM):</strong> Rupture before 37 weeks without labor. Manage with antibiotics (latency), corticosteroids, and delivery by 34 weeks.</li>
+                        <li><strong>Nursing care:</strong> Monitor contractions, FHR, signs of infection (chorioamnionitis), administer tocolytics and corticosteroids, prepare for possible delivery.</li>
+                    </ul>
+                    <button onclick="openQuiz('preterm')" class="mt-8 w-full bg-highrisk text-white font-black py-4 rounded-xl shadow-md hover:bg-highrisk-dark transition-colors text-lg"><i class="fa-solid fa-list-check mr-3"></i> Take 10-Item Quiz (Unlocks next section)</button>
+                </div>
+            </section>
+
+            <!-- Section 5: Bleeding Disorders & Multiple Gestation -->
+            <section id="bleeding" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-highrisk pb-3"><i class="fa-solid fa-hand-holding-heart text-highrisk mr-4"></i> Bleeding Disorders (Previa/Abruption) & Multiple Gestation</h2>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Placenta previa:</strong> Painless bright red bleeding. Management: Pelvic rest, hospitalization if bleeding, corticosteroids, cesarean delivery at 36–37 weeks.</li>
+                        <li><strong>Placental abruption:</strong> Painful dark bleeding, uterine tenderness. Management: Immediate assessment, IV access, blood transfusion, emergency delivery (vaginal or cesarean depending on stability).</li>
+                        <li><strong>Multiple gestation:</strong> Increased risk of preterm labor, preeclampsia, GDM, IUGR, malpresentation. Management: More frequent surveillance, cervical length monitoring, antenatal corticosteroids, planned cesarean for non‑vertex presenting twin.</li>
+                    </ul>
+                    <button onclick="openQuiz('bleeding')" class="mt-8 w-full bg-highrisk text-white font-black py-4 rounded-xl shadow-md hover:bg-highrisk-dark transition-colors text-lg"><i class="fa-solid fa-list-check mr-3"></i> Take 10-Item Quiz (Unlocks next section)</button>
+                </div>
+            </section>
+
+            <!-- Section 6: Nursing Management & Fetal Surveillance -->
+            <section id="nursing" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-highrisk pb-3"><i class="fa-solid fa-user-nurse text-highrisk mr-4"></i> Nursing Management & Fetal Surveillance</h2>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Fetal surveillance methods:</strong> Non‑stress test (NST), biophysical profile (BPP), contraction stress test (CST), umbilical artery Doppler.</li>
+                        <li><strong>Antepartum testing indications:</strong> Hypertensive disorders, diabetes, multiple gestation, IUGR, preterm PROM, previous stillbirth.</li>
+                        <li><strong>Nursing role:</strong> Educate patient on kick counts, schedule testing, interpret results (reactive NST = reassuring), recognize non‑reassuring patterns, coordinate with provider.</li>
+                        <li><strong>Maternal monitoring:</strong> Vital signs, urine protein, weight gain, symptoms (headache, visual changes, epigastric pain).</li>
+                        <li><strong>Psychosocial support:</strong> High‑risk patients experience anxiety, fear, and possible role restriction. Provide emotional support, clear communication, and involve family.</li>
+                    </ul>
+                    <button onclick="openQuiz('nursing')" class="mt-8 w-full bg-highrisk text-white font-black py-4 rounded-xl shadow-md hover:bg-highrisk-dark transition-colors text-lg"><i class="fa-solid fa-list-check mr-3"></i> Take 10-Item Quiz (Unlocks next section)</button>
+                </div>
+            </section>
+
+            <!-- Section 7: Mnemonics -->
+            <section id="mnemonics" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-highrisk pb-3"><i class="fa-solid fa-brain text-highrisk mr-4"></i> Mnemonic Appendix</h2>
+                    <div class="overflow-x-auto rounded-xl border">
+                        <table class="w-full text-left text-sm md:text-base"><thead class="bg-highrisk-dark text-white"><tr><th class="p-3">Topic</th><th class="p-3">Mnemonic</th><th class="p-3">Meaning</th></tr></thead>
+                        <tbody><tr><td class="p-3 font-semibold">Preeclampsia management (meds)</span><td><td class="font-black">M A L</span></td><td class="reveal-text">Magnesium sulfate (seizure prophylaxis), Antihypertensives (labetalol, nifedipine), Low dose aspirin (prevention)</span></tr>
+                        <tr class="bg-slate-50"><td class="p-3 font-semibold">Tocolytics for preterm labor</span></td><td class="font-black">N I M</span></td><td class="reveal-text">Nifedipine (Ca blocker), Indomethacin (NSAID), Magnesium (neuroprotection, not tocolysis first line)</span></td>
+                        <tr><td class="p-3 font-semibold">Corticosteroid timing</span></td><td class="font-black">24-34 weeks</span></td><td class="reveal-text">Give between 24 and 34 weeks for fetal lung maturity</span></td>
+                        <tr class="bg-slate-50"><td class="p-3 font-semibold">Diabetes glycemic targets</span></td><td class="font-black">95‑140‑120</span></td><td class="reveal-text">Fasting <95, 1h <140, 2h <120 mg/dL</span></td>
+                        <tr><td class="p-3 font-semibold">Placenta previa vs abruption</span></td><td class="font-black">P P vs A P</span></td><td class="reveal-text">Painless bleeding = Previa; Painful bleeding = Abruption</span></td>
+                        </tbody>
+                    </table>
+                    <button onclick="openQuiz('final_quiz')" class="mt-8 w-full bg-amber-500 text-slate-900 font-black py-4 rounded-xl shadow-md hover:bg-amber-400 text-lg"><i class="fa-solid fa-graduation-cap mr-3"></i> Take Final 50‑Item Exam</button>
+                </div>
+            </section>
+
+            <!-- Final Quiz Section -->
+            <section id="final_quiz_sec" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-8 text-center min-h-[60vh] flex flex-col justify-center items-center">
+                    <i class="fa-solid fa-graduation-cap text-8xl text-amber-400 mb-6"></i>
+                    <h2 class="text-4xl font-black text-slate-800 mb-4">Final 50‑Item Exam</h2>
+                    <p class="text-lg text-slate-600 mb-8">Covers all sections. 75% required to pass.</p>
+                    <button onclick="openQuiz('final_quiz')" class="w-full max-w-md bg-highrisk-dark text-white font-black py-4 rounded-xl shadow-md hover:bg-highrisk text-xl">Start Final Exam</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Quiz Modal -->
+    <div id="quiz-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeQuiz()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            <h2 id="quiz-title" class="text-3xl font-black text-slate-800 mb-2"></h2>
+            <p class="text-slate-600 mb-6 font-medium border-b pb-4">Score ≥75% to unlock next section.</p>
+            <div id="quiz-questions-container" class="space-y-4"></div>
+            <button id="quiz-submit-btn" onclick="submitQuiz()" class="mt-8 w-full bg-highrisk text-white font-bold py-4 rounded-xl shadow-lg text-lg">Submit Answers</button>
+            <div id="quiz-result-container" class="hidden mt-6 p-4 rounded-xl bg-slate-100 border"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            let unlockedSections = ['home'];
+            // Quiz data – 10 questions each for 6 sections
+            const quizzes = {
+                overview: {
+                    title: "Quiz 1: Overview & Risk Stratification (10 items)",
+                    next: "hypertension",
+                    questions: [
+                        { q: "A high‑risk pregnancy is best defined as:", options: ["Any pregnancy with complications", "One where maternal or fetal morbidity/mortality is significantly increased", "Pregnancy after age 40", "Only multiple gestation"], ans: 1 },
+                        { q: "Which maternal age range is considered a risk factor?", options: ["20–25 years", "18–35 years", "<18 or >35 years", "30–40 years"], ans: 2 },
+                        { q: "Which of the following is a chronic medical condition that increases pregnancy risk?", options: ["Well‑controlled asthma", "Chronic hypertension", "Mild anemia", "Allergy"], ans: 1 },
+                        { q: "A woman with a prior history of preeclampsia is at increased risk for:", options: ["Postpartum hemorrhage", "Recurrent preeclampsia", "Gestational diabetes", "Placenta previa"], ans: 1 },
+                        { q: "Which specialty is often involved in managing high‑risk pregnancies?", options: ["Maternal‑fetal medicine (MFM)", "Dermatology", "Orthopedics", "Ophthalmology"], ans: 0 },
+                        { q: "The goal of early risk identification is to:", options: ["Increase cesarean rates", "Prevent complications through surveillance and intervention", "Admit all patients to hospital", "Reduce prenatal visits"], ans: 1 },
+                        { q: "Multiple gestation alone classifies a pregnancy as:", options: ["Low risk", "High risk due to increased preterm labor and other complications", "No risk", "Requires immediate delivery"], ans: 1 },
+                        { q: "Which of the following is a modifiable risk factor?", options: ["Advanced maternal age", "Smoking", "Previous preterm birth", "Genetic disorder"], ans: 1 },
+                        { q: "Fetal surveillance in high‑risk pregnancies includes:", options: ["NST, BPP, Doppler", "Only ultrasound", "Only maternal weight", "Only fetal kick counts"], ans: 0 },
+                        { q: "A patient with chronic hypertension is considered high‑risk because of increased chance of:", options: ["Preeclampsia, abruption, IUGR", "Anemia", "Polyhydramnios", "Post‑term pregnancy"], ans: 0 }
+                    ]
+                },
+                hypertension: {
+                    title: "Quiz 2: Hypertensive Disorders (10 items)",
+                    next: "diabetes",
+                    questions: [
+                        { q: "Which antihypertensive is commonly used in pregnancy for acute severe hypertension?", options: ["Labetalol, hydralazine, nifedipine", "Captopril", "Losartan", "Hydrochlorothiazide"], ans: 0 },
+                        { q: "Magnesium sulfate is administered in severe preeclampsia to:", options: ["Lower blood pressure", "Prevent eclampsia (seizures)", "Accelerate fetal lung maturity", "Induce labor"], ans: 1 },
+                        { q: "A patient with severe preeclampsia at 32 weeks should be managed with:", options: ["Immediate delivery", "Antihypertensives, magnesium, corticosteroids, expectant management if stable", "Only bed rest at home", "No intervention"], ans: 1 },
+                        { q: "HELLP syndrome is characterized by:", options: ["Hypertension, Edema, Liver enzymes", "Hemolysis, Elevated Liver enzymes, Low Platelets", "Heart failure, Edema, Low platelets", "Hemoglobin, Electrolytes, LFT"], ans: 1 },
+                        { q: "The first‑line agent for seizure prophylaxis in eclampsia is:", options: ["Phenytoin", "Magnesium sulfate", "Lorazepam", "Diazepam"], ans: 1 },
+                        { q: "A woman with preeclampsia on magnesium sulfate should be monitored for signs of toxicity including:", options: ["Respiratory rate <12, decreased reflexes, oliguria", "Hypertension, headache", "Fever, tachycardia", "Polyuria"], ans: 0 },
+                        { q: "Gestational hypertension is defined as:", options: ["BP ≥140/90 before 20 weeks", "BP ≥140/90 after 20 weeks without proteinuria", "BP ≥160/110 with proteinuria", "Chronic hypertension"], ans: 1 },
+                        { q: "The antidote for magnesium toxicity is:", options: ["Calcium gluconate", "Sodium bicarbonate", "Protamine sulfate", "Naloxone"], ans: 0 },
+                        { q: "In eclampsia, delivery should occur:", options: ["Immediately after seizure, once mother and fetus are stabilized", "Wait 2 weeks", "Only after 37 weeks", "Never"], ans: 0 },
+                        { q: "Which laboratory finding is consistent with HELLP syndrome?", options: ["Elevated platelets", "Hemolysis (low haptoglobin, elevated LDH)", "Normal liver enzymes", "Elevated fibrinogen"], ans: 1 }
+                    ]
+                },
+                diabetes: {
+                    title: "Quiz 3: Diabetes in Pregnancy (10 items)",
+                    next: "preterm",
+                    questions: [
+                        { q: "The recommended fasting glucose target for a pregnant woman with diabetes is:", options: ["<100 mg/dL", "<95 mg/dL", "<110 mg/dL", "<120 mg/dL"], ans: 1 },
+                        { q: "Which insulin type is preferred for prandial coverage in pregnancy because it has a rapid onset and short duration?", options: ["Regular insulin", "NPH", "Lispro or aspart", "Glargine"], ans: 2 },
+                        { q: "Women with pregestational diabetes are at increased risk for fetal:", options: ["Neural tube defects and congenital heart defects", "Post‑term pregnancy", "IUGR only", "Polyhydramnios only"], ans: 0 },
+                        { q: "If diet‑controlled GDM, delivery is typically planned at:", options: ["37 weeks", "39–40 weeks", "34 weeks", "41 weeks"], ans: 1 },
+                        { q: "Intrapartum glucose target for diabetic women is:", options: ["<70 mg/dL", "70–110 mg/dL", ">200 mg/dL", "50–80 mg/dL"], ans: 1 },
+                        { q: "Oral hypoglycemic agents that may be used in GDM include:", options: ["Metformin and glyburide", "Insulin only", "Pioglitazone", "Sitagliptin"], ans: 0 },
+                        { q: "Newborn of a diabetic mother is at risk for:", options: ["Hypoglycemia, macrosomia, respiratory distress", "Hyperglycemia", "Post‑term birth", "Microcephaly"], ans: 0 },
+                        { q: "Fetal surveillance (NST/BPP) for women with pregestational diabetes often begins at:", options: ["20 weeks", "32–34 weeks", "36 weeks", "38 weeks"], ans: 1 },
+                        { q: "The mother with diabetes should be educated that breastfeeding:", options: ["Is not recommended", "Reduces her future risk of type 2 diabetes", "Increases neonatal hypoglycemia", "Should be avoided if on insulin"], ans: 1 },
+                        { q: "Poor glycemic control in the first trimester increases the risk of:", options: ["Macrosomia", "Congenital anomalies", "Preterm labor", "Placenta previa"], ans: 1 }
+                    ]
+                },
+                preterm: {
+                    title: "Quiz 4: Preterm Labor & PPROM (10 items)",
+                    next: "bleeding",
+                    questions: [
+                        { q: "Tocolytics are used to:", options: ["Stop preterm labor long‑term", "Delay delivery for 48 hours to allow corticosteroids", "Induce labor", "Treat infection"], ans: 1 },
+                        { q: "Corticosteroids for fetal lung maturity are given between:", options: ["20–24 weeks", "24–34 weeks", "34–36 weeks", "37–40 weeks"], ans: 1 },
+                        { q: "Which of the following is a contraindication to tocolysis?", options: ["Chorioamnionitis", "Preterm PROM", "Fetal distress", "All of the above"], ans: 3 },
+                        { q: "First‑line tocolytic (calcium channel blocker) is:", options: ["Nifedipine", "Indomethacin", "Terbutaline", "Magnesium sulfate"], ans: 0 },
+                        { q: "Preterm PROM is defined as:", options: ["Rupture of membranes before 20 weeks", "Rupture before 37 weeks without labor", "Rupture after 37 weeks", "Prolonged rupture >24 hours"], ans: 1 },
+                        { q: "Antibiotics are given in PPROM to:", options: ["Treat maternal fever", "Prolong latency and prevent chorioamnionitis", "Stop contractions", "Accelerate lung maturity"], ans: 1 },
+                        { q: "A patient with PPROM at 32 weeks with no signs of infection is typically managed with:", options: ["Immediate delivery", "Expectant management with corticosteroids and antibiotics", "Home discharge", "Induction of labor"], ans: 1 },
+                        { q: "The fetal neuroprotective effect of magnesium sulfate is used in:", options: ["Preterm labor <32 weeks to reduce cerebral palsy risk", "Term labor", "Postpartum", "Eclampsia"], ans: 0 },
+                        { q: "A patient with preterm labor at 30 weeks with regular contractions and cervical dilation should receive:", options: ["Tocolysis + corticosteroids", "Immediate cesarean", "Only hydration", "Home bed rest"], ans: 0 },
+                        { q: "Signs of chorioamnionitis include:", options: ["Maternal fever, uterine tenderness, foul amniotic fluid", "Painless bleeding", "Decreased fetal movement", "Headache"], ans: 0 }
+                    ]
+                },
+                bleeding: {
+                    title: "Quiz 5: Bleeding & Multiple Gestation (10 items)",
+                    next: "nursing",
+                    questions: [
+                        { q: "Placenta previa presents with:", options: ["Painful dark bleeding", "Painless bright red bleeding", "Green discharge", "No bleeding"], ans: 1 },
+                        { q: "Abruptio placentae typically presents with:", options: ["Painless bleeding", "Sudden abdominal pain, uterine tenderness, dark bleeding", "Gradual onset", "No symptoms"], ans: 1 },
+                        { q: "Which of the following is contraindicated in suspected placenta previa?", options: ["Ultrasound", "IV access", "Digital vaginal examination", "Fetal monitoring"], ans: 2 },
+                        { q: "Management of complete placenta previa at 36 weeks with bleeding includes:", options: ["Vaginal delivery", "Cesarean section", "Expectant management", "Induction"], ans: 1 },
+                        { q: "Multiple gestation is associated with increased risk of:", options: ["Preterm labor, preeclampsia, GDM", "Post‑term pregnancy", "Macrosomia", "Prolonged labor"], ans: 0 },
+                        { q: "Twin pregnancies should be screened for preterm labor by:", options: ["Cervical length measurement", "Only symptoms", "Maternal age", "No screening needed"], ans: 0 },
+                        { q: "In a patient with placental abruption and severe hemorrhage, the first priority is:", options: ["Ultrasound", "IV access, blood products, and immediate delivery", "Pain management", "Antibiotics"], ans: 1 },
+                        { q: "A woman with triplet gestation at 28 weeks should receive:", options: ["Corticosteroids for lung maturity", "No special care", "Home delivery", "Only bed rest"], ans: 0 },
+                        { q: "Couvelaire uterus is associated with:", options: ["Placenta previa", "Severe abruptio placentae", "Preterm labor", "Multiple gestation"], ans: 1 },
+                        { q: "Delivery for uncomplicated dichorionic twins at term is often planned at:", options: ["37–38 weeks", "40 weeks", "34 weeks", "39 weeks"], ans: 0 }
+                    ]
+                },
+                nursing: {
+                    title: "Quiz 6: Nursing Management & Surveillance (10 items)",
+                    next: "mnemonics",
+                    questions: [
+                        { q: "A reactive non‑stress test (NST) is defined as:", options: ["≥2 accelerations of 15 bpm for 15 seconds in 20 minutes", "No accelerations", "Late decelerations", "Bradycardia"], ans: 0 },
+                        { q: "The biophysical profile (BPP) includes all EXCEPT:", options: ["Fetal breathing", "Fetal movement", "Contraction stress test", "Amniotic fluid volume"], ans: 2 },
+                        { q: "The nurse should teach a high‑risk patient about fetal kick counts. Normal is:", options: ["At least 10 movements in 2 hours", "At least 10 movements in 12 hours", "Less than 5 movements in 1 hour", "Any movement is okay"], ans: 0 },
+                        { q: "Which of the following is a sign of magnesium toxicity?", options: ["Respiratory rate 16", "Deep tendon reflexes 2+", "Urine output 30 mL/hr", "Respiratory rate 10, absent reflexes, oliguria"], ans: 3 },
+                        { q: "A patient with preeclampsia complains of severe headache and epigastric pain. The nurse should:", options: ["Give acetaminophen", "Notify provider immediately (possible HELLP/severe features)", "Encourage rest", "Discharge home"], ans: 1 },
+                        { q: "A pregnant woman with diabetes should be advised to monitor blood glucose:", options: ["Once daily", "Fasting and postprandial (1h or 2h)", "Weekly", "Only if symptomatic"], ans: 1 },
+                        { q: "In preterm labor, the nurse should assess for signs of chorioamnionitis including:", options: ["Fever, uterine tenderness, maternal tachycardia", "Painless contractions", "Fetal macrosomia", "Weight loss"], ans: 0 },
+                        { q: "The nurse caring for a patient with placenta previa should prioritize:", options: ["Administering tocolytics", "Avoiding vaginal exams, monitoring bleeding", "Preparing for vaginal delivery", "Encouraging ambulation"], ans: 1 },
+                        { q: "A high‑risk patient who is non‑reactive on NST should next have:", options: ["BPP or contraction stress test", "Discharge", "Cesarean section", "Nothing"], ans: 0 },
+                        { q: "The nurse should educate a patient on bed rest for multiple gestation to:", options: ["Prevent preterm labor, promote fetal growth", "Guarantee term delivery", "Increase maternal weight", "Reduce preeclampsia risk"], ans: 0 }
+                    ]
+                }
+            };
+            
+            // Build final 50‑item exam (10 from each of 5 sections; we have 6 sections, take 8–9 each)
+            let finalQuestions = [];
+            for(let sec of ['overview','hypertension','diabetes','preterm','bleeding','nursing']) {
+                finalQuestions = finalQuestions.concat(quizzes[sec].questions.slice(0,9));
+            }
+            while(finalQuestions.length < 50) finalQuestions.push({ q: "What is the first‑line treatment for seizure prophylaxis in severe preeclampsia?", options: ["Phenytoin", "Magnesium sulfate", "Diazepam", "Lorazepam"], ans: 1 });
+            quizzes['final_quiz'] = { title: "Final 50‑Item Exam: Management of High‑Risk Pregnancy", next: null, questions: finalQuestions.slice(0,50) };
+            
+            // Global functions
+            window.unlockedSections = unlockedSections;
+            window.quizzes = quizzes;
+            
+            window.unlockFirstSection = function() {
+                if(!unlockedSections.includes('overview')) {
+                    unlockedSections.push('overview');
+                    updateSidebarUI();
+                }
+                showSection('overview');
+            };
+            
+            window.showSection = function(id) {
+                if(!unlockedSections.includes(id) && id !== 'home') {
+                    alert("Complete the previous section quiz (≥75%) to unlock this content.");
+                    return;
+                }
+                document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
+                const target = document.getElementById(id);
+                if(target) target.classList.remove('hidden');
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                const activeBtn = document.getElementById('btn-'+id);
+                if(activeBtn) activeBtn.classList.add('active');
+                if(window.innerWidth < 768) document.getElementById('sidebar')?.classList.add('hidden');
+                document.querySelector('main').scrollTop = 0;
+            };
+            
+            function updateSidebarUI() {
+                const all = ['home','overview','hypertension','diabetes','preterm','bleeding','nursing','mnemonics','final_quiz_sec'];
+                all.forEach(sec => {
+                    const btn = document.getElementById('btn-'+sec);
+                    if(!btn) return;
+                    const lockIcon = btn.querySelector('.fa-lock'), mainIcon = btn.querySelector('.nav-icon');
+                    if(unlockedSections.includes(sec) || sec === 'home') {
+                        btn.classList.remove('locked-section');
+                        if(lockIcon) lockIcon.classList.add('hidden');
+                        if(mainIcon) mainIcon.classList.remove('hidden');
+                    } else {
+                        btn.classList.add('locked-section');
+                        if(lockIcon) lockIcon.classList.remove('hidden');
+                        if(mainIcon) mainIcon.classList.add('hidden');
+                    }
+                });
+            }
+            
+            let currentQuiz = null;
+            window.openQuiz = function(sectionId) {
+                currentQuiz = sectionId;
+                const qd = quizzes[sectionId];
+                if(!qd) return;
+                document.getElementById('quiz-title').innerText = qd.title;
+                const container = document.getElementById('quiz-questions-container');
+                container.innerHTML = '';
+                qd.questions.forEach((q, idx) => {
+                    let html = `<div class="bg-slate-50 p-4 rounded-xl border mb-4"><p class="font-bold mb-3">${idx+1}. ${q.q}</p><div class="space-y-2">`;
+                    q.options.forEach((opt, oi) => {
+                        html += `<label class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white cursor-pointer"><input type="radio" name="q${idx}" value="${oi}" class="form-radio text-highrisk"><span>${opt}</span></label>`;
+                    });
+                    html += `</div><div class="feedback-${idx} text-sm mt-2 hidden"></div></div>`;
+                    container.innerHTML += html;
+                });
+                document.getElementById('quiz-submit-btn').classList.remove('hidden');
+                document.getElementById('quiz-result-container').classList.add('hidden');
+                document.getElementById('quiz-modal').classList.remove('hidden');
+            };
+            
+            window.closeQuiz = function() { document.getElementById('quiz-modal').classList.add('hidden'); };
+            
+            window.submitQuiz = function() {
+                const qd = quizzes[currentQuiz];
+                if(!qd) return;
+                let score = 0;
+                for(let i = 0; i < qd.questions.length; i++) {
+                    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                    const isCorrect = selected && parseInt(selected.value) === qd.questions[i].ans;
+                    if(isCorrect) score++;
+                    const fbDiv = document.querySelector(`.feedback-${i}`);
+                    if(fbDiv) {
+                        fbDiv.classList.remove('hidden');
+                        const correctAns = qd.questions[i].options[qd.questions[i].ans];
+                        if(isCorrect) {
+                            fbDiv.innerHTML = `<span class="text-green-700"><i class="fa-regular fa-circle-check"></i> Correct!</span>`;
+                            fbDiv.parentElement?.classList.add('quiz-feedback-correct');
+                            fbDiv.parentElement?.classList.remove('quiz-feedback-wrong');
+                        } else {
+                            const selectedText = selected ? qd.questions[i].options[parseInt(selected.value)] : "No answer";
+                            fbDiv.innerHTML = `<span class="text-red-700"><i class="fa-regular fa-circle-xmark"></i> Incorrect. Correct: ${correctAns}. Your answer: ${selectedText}</span>`;
+                            fbDiv.parentElement?.classList.add('quiz-feedback-wrong');
+                            fbDiv.parentElement?.classList.remove('quiz-feedback-correct');
+                        }
+                    }
+                }
+                const percent = (score / qd.questions.length) * 100;
+                const resultDiv = document.getElementById('quiz-result-container');
+                const btn = document.getElementById('quiz-submit-btn');
+                btn.classList.add('hidden');
+                resultDiv.classList.remove('hidden');
+                if(percent >= 75) {
+                    if(currentQuiz === 'final_quiz') {
+                        resultDiv.innerHTML = `<div class="text-amber-500 text-6xl text-center">🏆</div><h3 class="text-2xl font-black text-center">Mastery Achieved!</h3><p class="text-center">Score ${score}/${qd.questions.length} (${percent}%)</p><p class="text-center text-green-700">You have mastered the management of high‑risk conditions in pregnancy based on Adele Pillitteri.</p><button onclick="closeQuiz()" class="mt-4 w-full bg-highrisk text-white py-2 rounded-lg">Close</button>`;
+                        return;
+                    }
+                    if(qd.next && !unlockedSections.includes(qd.next)) {
+                        unlockedSections.push(qd.next);
+                        if(qd.next === 'mnemonics') unlockedSections.push('final_quiz_sec');
+                        updateSidebarUI();
+                    }
+                    resultDiv.innerHTML = `<div class="text-green-600 text-5xl text-center">✓</div><h3 class="text-2xl font-black text-center">Passed!</h3><p class="text-center">Score ${score}/${qd.questions.length} (${percent}%)</p><button onclick="closeQuiz(); showSection('${qd.next}')" class="mt-4 w-full bg-green-600 text-white py-2 rounded-lg">Unlock Next Section</button>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="text-red-500 text-5xl text-center">✗</div><h3 class="text-2xl font-black text-center">Failed</h3><p class="text-center">Score ${score}/${qd.questions.length} (${percent}%). Need 75%.</p><button onclick="openQuiz('${currentQuiz}')" class="mt-4 w-full bg-slate-600 text-white py-2 rounded-lg">Try Again</button>`;
+                }
+            };
+            
+            window.toggleRecallMode = function() {
+                const active = !document.body.classList.contains('recall-mode');
+                const toggle = document.getElementById('recall-toggle'), knob = document.getElementById('recall-knob');
+                if(active) {
+                    document.body.classList.add('recall-mode');
+                    toggle.classList.add('bg-highrisk');
+                    knob.classList.add('translate-x-6');
+                } else {
+                    document.body.classList.remove('recall-mode');
+                    toggle.classList.remove('bg-highrisk');
+                    knob.classList.remove('translate-x-6');
+                }
+            };
+            
+            window.toggleMobileMenu = function() {
+                const s = document.getElementById('sidebar');
+                if(s.classList.contains('hidden')) s.classList.remove('hidden');
+                else s.classList.add('hidden');
+            };
+            
+            document.addEventListener('DOMContentLoaded', () => {
+                updateSidebarUI();
+                document.querySelectorAll('.reveal-text').forEach(el => {
+                    el.addEventListener('click', function() {
+                        if(document.body.classList.contains('recall-mode')) this.classList.toggle('revealed');
+                    });
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
